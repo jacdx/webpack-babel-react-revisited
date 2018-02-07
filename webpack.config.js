@@ -4,6 +4,8 @@ const path = require('path');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin'); //  -> ADDED IN THIS STEP
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+
 
 // Constant with our paths
 const paths = {
@@ -24,7 +26,23 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: path.join(paths.SRC, 'index.html'),
     }),
-    new ExtractTextPlugin('style.bundle.css'), // CSS will be extracted to this bundle file -> ADDED IN THIS STEP
+    new ExtractTextPlugin('style.bundle.css'), // CSS will be extracted to this bundle file -> ADDED IN THIS STEP  plugins: [
+    new UglifyJsPlugin({
+      uglifyOptions: {
+        ie8: false,
+        parallel: true,
+        // ecma: 6,
+        parse: {},
+        // mangle: false,
+        output: {
+          comments: false,
+          beautify: false,
+
+        },
+        compress: {},
+        warnings: false
+      }
+    })
   ],
   // Loaders configuration
   // We are telling webpack to use "babel-loader" for .js and .jsx files
@@ -41,11 +59,13 @@ module.exports = {
       // Files will get handled by css loader and then passed to the extract text plugin
       // which will write it to the file we defined above
       {
-        test: /\.css$/,
+        test: /\.scss$/,
         loader: ExtractTextPlugin.extract({
-          use: 'css-loader',
+          use: [
+            'css-loader', 'sass-loader'],
         }),
       },
+
       // File loader for image assets -> ADDED IN THIS STEP
       // We'll add only image extensions, but you can add things like svgs, fonts and videos
       {
